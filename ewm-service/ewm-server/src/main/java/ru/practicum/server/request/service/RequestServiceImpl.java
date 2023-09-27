@@ -43,7 +43,7 @@ public class RequestServiceImpl implements RequestService {
                 .status(Status.PENDING)
                 .build();
         if (!event.isRequestModeration() || event.getParticipantLimit() == 0) {
-            event.setConfirmedRequests(event.getConfirmedRequests()+1);
+            event.setConfirmedRequests(event.getConfirmedRequests() + 1);
             newRequest.setStatus(Status.CONFIRMED);
         }
         return RequestMapper.requestToRequestDto(requestRepository.save(newRequest));
@@ -51,7 +51,7 @@ public class RequestServiceImpl implements RequestService {
 
     @Override
     public List<ParticipationRequestDto> getUserRequests(int userId) {
-        userRepository.findById(userId).orElseThrow(() ->new NotFoundException( "User not found"));
+        userRepository.findById(userId).orElseThrow(() -> new NotFoundException("User not found"));
         return requestRepository.findAllByRequester_Id(userId).stream()
                 .map(RequestMapper::requestToRequestDto).collect(Collectors.toList());
     }
@@ -59,7 +59,7 @@ public class RequestServiceImpl implements RequestService {
     @Transactional
     @Override
     public ParticipationRequestDto cancelRequest(int userId, int requestId) {
-        userRepository.findById(userId).orElseThrow(() ->new NotFoundException( "User not found"));
+        userRepository.findById(userId).orElseThrow(() -> new NotFoundException("User not found"));
         ParticipationRequest pr = requestRepository.findById(requestId)
                 .orElseThrow(() -> new NotFoundException("Request not found"));
         pr.setStatus(Status.CANCELED);

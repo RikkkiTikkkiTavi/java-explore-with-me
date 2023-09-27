@@ -14,10 +14,8 @@ import java.time.LocalDateTime;
 public class EventMapper {
     public static Event newEventDtoToEvent(NewEventDto dto, Category category, User initiator) {
         boolean requestModeration = true;
-        {
-            if (dto.getRequestModeration() != null) {
-                requestModeration = dto.getRequestModeration();
-            }
+        if (dto.getRequestModeration() != null) {
+            requestModeration = dto.getRequestModeration();
         }
         return Event.builder()
                 .annotation(dto.getAnnotation())

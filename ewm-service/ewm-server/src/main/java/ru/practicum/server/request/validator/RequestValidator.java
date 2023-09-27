@@ -15,7 +15,7 @@ public class RequestValidator {
         if (!event.getState().equals(EventState.PUBLISHED)) {
             throw new ConflictException("You cannot participate in an unpublished event");
         }
-        if(event.getParticipantLimit() != 0) {
+        if (event.getParticipantLimit() != 0) {
             if (event.getConfirmedRequests() >= event.getParticipantLimit()) {
                 throw new ConflictException("Request limit reached");
             }

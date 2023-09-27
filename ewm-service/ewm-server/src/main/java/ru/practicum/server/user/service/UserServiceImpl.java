@@ -24,7 +24,7 @@ public class UserServiceImpl implements UserService {
     @Override
     public List<UserDto> getUsers(List<Integer> ids, int from, int size) {
         PageRequest pr = PageRequest.of(from, size, Sort.by(Sort.Direction.ASC, "id"));
-        if(ids == null) {
+        if (ids == null) {
             return UserMapper.toUserDtoList(userRepository.findAll(pr));
         }
         return UserMapper.toUserDtoList(userRepository.findAllByIdIn(ids, pr));

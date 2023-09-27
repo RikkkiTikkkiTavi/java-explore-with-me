@@ -19,7 +19,7 @@ public class EventValidator {
     public static void checkEventDate(UpdateEventUserRequest request) {
         LocalDateTime eventDate = request.getEventDate();
         LocalDateTime nowMinus = LocalDateTime.now().minusHours(2L);
-        if(eventDate != null && eventDate.isBefore(nowMinus)) {
+        if (eventDate != null && eventDate.isBefore(nowMinus)) {
             throw new ValidateException("Event start cannot be earlier than two hours from now");
         }
     }
@@ -27,7 +27,7 @@ public class EventValidator {
     public static void checkPublishedTime(Event event) {
         LocalDateTime eventDate = event.getEventDate();
         LocalDateTime nowMinus = LocalDateTime.now().minusHours(1L);
-        if(eventDate.isBefore(nowMinus)) {
+        if (eventDate.isBefore(nowMinus)) {
             throw new ValidateException("Event start cannot be earlier than one hours from now");
         }
     }

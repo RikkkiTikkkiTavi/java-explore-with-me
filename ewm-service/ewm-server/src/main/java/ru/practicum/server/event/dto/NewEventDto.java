@@ -10,6 +10,7 @@ import ru.practicum.server.location.model.Location;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 import java.time.LocalDateTime;
+
 @Value
 @Builder
 @Jacksonized
