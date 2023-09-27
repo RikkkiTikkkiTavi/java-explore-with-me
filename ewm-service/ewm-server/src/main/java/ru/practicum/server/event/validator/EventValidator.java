@@ -11,7 +11,7 @@ public class EventValidator {
     public static void checkEventDate(NewEventDto newEventDto) {
         LocalDateTime eventDate = newEventDto.getEventDate();
         LocalDateTime nowMinus = LocalDateTime.now().minusHours(2L);
-        if(eventDate.isBefore(nowMinus)) {
+        if (eventDate.isBefore(nowMinus)) {
             throw new ValidateException("Event start cannot be earlier than two hours from now");
         }
     }
