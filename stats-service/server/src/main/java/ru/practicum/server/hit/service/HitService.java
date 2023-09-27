@@ -1,7 +1,7 @@
 package ru.practicum.server.hit.service;
 
 import ru.practicum.dto.hit.HitDto;
-import ru.practicum.dto.state.StateDto;
+import ru.practicum.dto.stat.StatDto;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -9,5 +9,5 @@ import java.util.List;
 public interface HitService {
     void add(HitDto hitDto);
 
-    List<StateDto> getState(LocalDateTime start, LocalDateTime end, List<String> uris, boolean unique);
+    List<StatDto> getState(LocalDateTime start, LocalDateTime end, List<String> uris, boolean unique);
 }
