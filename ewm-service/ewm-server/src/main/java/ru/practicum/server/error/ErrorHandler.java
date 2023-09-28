@@ -3,6 +3,7 @@ package ru.practicum.server.error;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.MethodArgumentNotValidException;
+import org.springframework.web.bind.MissingServletRequestParameterException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
@@ -48,6 +49,13 @@ public class ErrorHandler {
     public ErrorResponse handleConflict(final DataIntegrityViolationException e) {
         return new ErrorResponse(HttpStatus.CONFLICT.toString(),
                 HttpStatus.CONFLICT.getReasonPhrase(), e.getMessage(), LocalDateTime.now());
+    }
+
+    @ExceptionHandler
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public ErrorResponse handleConflict(final MissingServletRequestParameterException e) {
+        return new ErrorResponse(HttpStatus.BAD_REQUEST.toString(),
+                HttpStatus.BAD_REQUEST.getReasonPhrase(), e.getMessage(), LocalDateTime.now());
     }
 
     @ExceptionHandler
