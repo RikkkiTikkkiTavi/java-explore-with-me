@@ -31,6 +31,7 @@ public class HitServiceImpl implements HitService {
     @Override
     public List<StatDto> getState(LocalDateTime start, LocalDateTime end, List<String> uris, boolean unique) {
         List<Hit> hits;
+        HitValidator.checkTime(start, end);
         if (uris != null) {
             hits = hitRepository.findAllByUriInAndCreatedBetween(uris, start, end);
         } else {
