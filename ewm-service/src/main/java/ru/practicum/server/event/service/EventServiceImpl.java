@@ -9,18 +9,18 @@ import org.springframework.transaction.annotation.Transactional;
 import ru.practicum.client.StatsClient;
 import ru.practicum.dto.hit.HitDto;
 import ru.practicum.dto.stat.StatDto;
-import ru.practicum.server.event.model.EventState;
-import ru.practicum.server.event.validator.EventValidator;
-import ru.practicum.server.exception.ConflictException;
-import ru.practicum.server.exception.ValidateException;
-import ru.practicum.server.location.repository.LocationRepository;
 import ru.practicum.server.category.model.Category;
 import ru.practicum.server.category.repository.CategoryRepository;
 import ru.practicum.server.event.dto.*;
 import ru.practicum.server.event.mapper.EventMapper;
 import ru.practicum.server.event.model.Event;
+import ru.practicum.server.event.model.EventState;
 import ru.practicum.server.event.repository.EventRepository;
+import ru.practicum.server.event.validator.EventValidator;
+import ru.practicum.server.exception.ConflictException;
 import ru.practicum.server.exception.NotFoundException;
+import ru.practicum.server.exception.ValidateException;
+import ru.practicum.server.location.repository.LocationRepository;
 import ru.practicum.server.request.dto.ParticipationRequestDto;
 import ru.practicum.server.request.mapper.RequestMapper;
 import ru.practicum.server.request.model.ParticipationRequest;
@@ -46,6 +46,8 @@ public class EventServiceImpl implements EventService {
     private LocationRepository locationRepository;
     private RequestRepository requestRepository;
     private StatsClient statsClient;
+
+    private static final long IGNORE_NANOS = 1;
 
     @Transactional
     @Override
@@ -108,6 +110,9 @@ public class EventServiceImpl implements EventService {
         userRepository.findById(userId).orElseThrow(() -> new NotFoundException("User not found"));
         List<Integer> ids = request.getRequestIds();
 
+        if (request.getStatus() == null) {
+            throw new ConflictException("Status must not be null");
+        }
         if (requestRepository.findAllByIdInAndStatus(ids, Status.CONFIRMED).size() > 0 && request.getStatus()
                 .equals(Status.REJECTED)) {
             throw new ConflictException("Confirmed applications cannot be rejected");
@@ -177,7 +182,7 @@ public class EventServiceImpl implements EventService {
                                                 LocalDateTime rangeStart, LocalDateTime rangeEnd, int from, int size) {
         PageRequest pr = PageRequest.of(from, size, Sort.by(Sort.Direction.ASC, "id"));
         return eventRepository.getFilteredEvents(users, states, categories, rangeStart, rangeEnd, pr).stream()
-                .map((e) -> EventMapper.eventToEventFullDto(e, getStats(e))).collect(Collectors.toList());
+                .map(e -> EventMapper.eventToEventFullDto(e, getStats(e))).collect(Collectors.toList());
     }
 
     @Transactional
@@ -229,7 +234,7 @@ public class EventServiceImpl implements EventService {
     @Override
     public EventFullDto getEventInfo(int eventId, HttpServletRequest request) {
         Event event = eventRepository.findById(eventId).orElseThrow(() -> new NotFoundException("Event not found"));
-        if (event.getState() != null && !event.getState().equals(EventState.PUBLISHED)) {
+        if (!event.getState().equals(EventState.PUBLISHED)) {
             throw new NotFoundException("State must be published");
         }
         createHit(request);
@@ -249,7 +254,7 @@ public class EventServiceImpl implements EventService {
         String uri = "/events/" + event.getId();
         String[] uris = new String[]{uri};
         List<StatDto> stats =
-                statsClient.getStats(event.getCreatedOn(), LocalDateTime.now().plusSeconds(10), uris, true);
+                statsClient.getStats(event.getCreatedOn(), LocalDateTime.now().plusSeconds(IGNORE_NANOS), uris, true);
         if (stats.size() > 0) {
             return stats.get(0).getHits();
         }
