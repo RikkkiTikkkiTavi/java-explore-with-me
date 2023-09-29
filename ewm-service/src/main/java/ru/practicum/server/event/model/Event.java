@@ -4,12 +4,12 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-
 import ru.practicum.server.category.model.Category;
 import ru.practicum.server.location.model.Location;
 import ru.practicum.server.user.model.User;
 
 import javax.persistence.*;
+import javax.validation.constraints.NotNull;
 import java.time.LocalDateTime;
 
 @Entity
@@ -66,6 +66,7 @@ public class Event {
     @Column(name = "confirmed_requests")
     int confirmedRequests;
 
+    @NotNull(message = "Event state must be not null")
     @Enumerated(EnumType.STRING)
     private EventState state;
 }
