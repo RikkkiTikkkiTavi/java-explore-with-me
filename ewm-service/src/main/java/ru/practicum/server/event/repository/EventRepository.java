@@ -18,30 +18,30 @@ public interface EventRepository extends JpaRepository<Event, Integer> {
 
     @Query("SELECT e FROM Event e " +
             "WHERE " +
-            "(e.initiator.id in :#{#param.users} or :#{#param.users} is null) and " +
-            "(e.state in :#{#param.states} or :#{#param.states} is null) and " +
-            "(e.category.id in :#{#param.categories} or :#{#param.categories} is null) and " +
-            "e.eventDate between :#{#param.rangeStart} and :#{#param.rangeEnd}")
-    Page<Event> getFilteredEvents(AdminEventsParameters param, PageRequest pageRequest);
+            "(e.initiator.id in :#{#parameters.users} or :#{#parameters.users} is null) and " +
+            "(e.state in :#{#parameters.states} or :#{#parameters.states} is null) and " +
+            "(e.category.id in :#{#parameters.categories} or :#{#parameters.categories} is null) and " +
+            "e.eventDate between :#{#parameters.rangeStart} and :#{#parameters.rangeEnd}")
+    Page<Event> getFilteredEvents(AdminEventsParameters parameters, PageRequest pageRequest);
 
     @Query("SELECT e FROM Event e " +
             "WHERE " +
             "e.state = 'PUBLISHED' and " +
-            "(upper(e.annotation) LIKE %:#{#param.text}% or upper(e.description) LIKE %:#{#param.text}% or " +
-            ":#{#param.text} is null) and " +
-            "(e.category.id in :#{#param.categories} or :#{#param.categories} is null) and " +
-            "(e.paid = :#{#param.paid} or :#{#param.paid} is null) and " +
-            "e.eventDate between :#{#param.rangeStart} and :#{#param.rangeEnd}")
-    Page<Event> getPublicEvents(@Param("param") PublicEventsParameters param, PageRequest pageRequest);
+            "(upper(e.annotation) LIKE %:#{#parameters.text}% or upper(e.description) LIKE %:#{#parameters.text}% or " +
+            ":#{#parameters.text} is null) and " +
+            "(e.category.id in :#{#parameters.categories} or :#{#parameters.categories} is null) and " +
+            "(e.paid = :#{#parameters.paid} or :#{#parameters.paid} is null) and " +
+            "e.eventDate between :#{#parameters.rangeStart} and :#{#parameters.rangeEnd}")
+    Page<Event> getPublicEvents(@Param("param") PublicEventsParameters parameters, PageRequest pageRequest);
 
     @Query("SELECT e FROM Event e " +
             "WHERE " +
             "e.state = 'PUBLISHED' and " +
             "(e.participantLimit = 0 or e.confirmedRequests < e.participantLimit) and " +
-            "(upper(e.annotation) LIKE %:#{#param.text}% or upper(e.description) LIKE %:#{#param.text}% or " +
-            ":#{#param.text} is null) and " +
-            "(e.category.id in :#{#param.categories} or :#{#param.categories} is null) and " +
-            "(e.paid = :#{#param.paid} or :#{#param.paid} is null) and " +
-            "e.eventDate between :#{#param.rangeStart} and :#{#param.rangeEnd}")
-    Page<Event> getAvailableEvents(@Param("param") PublicEventsParameters param, PageRequest pageRequest);
+            "(upper(e.annotation) LIKE %:#{#parameters.text}% or upper(e.description) LIKE %:#{#parameters.text}% or " +
+            ":#{#parameters.text} is null) and " +
+            "(e.category.id in :#{#parameters.categories} or :#{#parameters.categories} is null) and " +
+            "(e.paid = :#{#parameters.paid} or :#{#parameters.paid} is null) and " +
+            "e.eventDate between :#{#parameters.rangeStart} and :#{#parameters.rangeEnd}")
+    Page<Event> getAvailableEvents(@Param("param") PublicEventsParameters parameters, PageRequest pageRequest);
 }

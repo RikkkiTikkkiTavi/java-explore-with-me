@@ -34,14 +34,14 @@ public class EventAdminController {
                                                 LocalDateTime rangeEnd,
                                                 @RequestParam(defaultValue = "0") Integer from,
                                                 @RequestParam(defaultValue = "10") Integer size) {
-        AdminEventsParameters param = AdminEventsParameters.builder()
+        AdminEventsParameters parameters = AdminEventsParameters.builder()
                 .users(users)
                 .states(states)
                 .categories(categories)
                 .rangeStart(rangeStart)
                 .rangeEnd(rangeEnd)
                 .build();
-        return eventService.getFilteredEvents(param, from, size);
+        return eventService.getFilteredEvents(parameters, from, size);
     }
 
     @PatchMapping("/{eventId}")

@@ -66,8 +66,8 @@ public class EventServiceImpl implements EventService {
     @Override
     public List<EventShortDto> getUserEvents(int userId, int from, int size) {
         userRepository.findById(userId).orElseThrow(() -> new NotFoundException("User not found"));
-        PageRequest pr = PageRequest.of(from, size, Sort.by(Sort.Direction.ASC, "id"));
-        Page<Event> events = eventRepository.findAllByInitiator_Id(userId, pr);
+        PageRequest pageRequest = PageRequest.of(from, size, Sort.by(Sort.Direction.ASC, "id"));
+        Page<Event> events = eventRepository.findAllByInitiator_Id(userId, pageRequest);
         return events.stream().map(EventMapper::eventToShortDto).collect(Collectors.toList());
     }
 
@@ -179,10 +179,10 @@ public class EventServiceImpl implements EventService {
     }
 
     @Override
-    public List<EventFullDto> getFilteredEvents(AdminEventsParameters param, int from, int size) {
-        PageRequest pr = PageRequest.of(from, size, Sort.by(Sort.Direction.ASC, "id"));
-        return eventRepository.getFilteredEvents(param, pr).stream()
-                .map(e -> EventMapper.eventToEventFullDto(e, getStats(e))).collect(Collectors.toList());
+    public List<EventFullDto> getFilteredEvents(AdminEventsParameters parameters, int from, int size) {
+        PageRequest pageRequest = PageRequest.of(from, size, Sort.by(Sort.Direction.ASC, "id"));
+        return eventRepository.getFilteredEvents(parameters, pageRequest).stream()
+                .map(event -> EventMapper.eventToEventFullDto(event, getStats(event))).collect(Collectors.toList());
     }
 
     @Transactional
@@ -205,16 +205,16 @@ public class EventServiceImpl implements EventService {
     }
 
     @Override
-    public List<EventShortDto> getPublicEvents(PublicEventsParameters param, int from, int size,
+    public List<EventShortDto> getPublicEvents(PublicEventsParameters parameters, int from, int size,
                                                HttpServletRequest request) {
-        EventValidator.checkParameters(param);
-        PageRequest pr = PageRequest.of(from, size, Sort.by(Sort.Direction.ASC, param.getSort()));
-        if (param.getOnlyAvailable()) {
-            Page<Event> availableEvents = eventRepository.getAvailableEvents(param, pr);
+        EventValidator.checkParameters(parameters);
+        PageRequest pageRequest = PageRequest.of(from, size, Sort.by(Sort.Direction.ASC, parameters.getSort()));
+        if (parameters.getOnlyAvailable()) {
+            Page<Event> availableEvents = eventRepository.getAvailableEvents(parameters, pageRequest);
             createHit(request);
             return availableEvents.stream().map(EventMapper::eventToShortDto).collect(Collectors.toList());
         } else {
-            Page<Event> allEvents = eventRepository.getPublicEvents(param, pr);
+            Page<Event> allEvents = eventRepository.getPublicEvents(parameters, pageRequest);
             createHit(request);
             return allEvents.stream().map(EventMapper::eventToShortDto).collect(Collectors.toList());
         }

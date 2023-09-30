@@ -39,7 +39,7 @@ public class EventPublicController {
                                                @RequestParam(defaultValue = "0") int from,
                                                @RequestParam(defaultValue = "10") int size,
                                                HttpServletRequest request) {
-        PublicEventsParameters param = PublicEventsParameters.builder()
+        PublicEventsParameters parameters = PublicEventsParameters.builder()
                 .text(text)
                 .categories(categories)
                 .paid(paid)
@@ -48,7 +48,7 @@ public class EventPublicController {
                 .rangeStart(rangeStart)
                 .rangeEnd(rangeEnd)
                 .build();
-        return eventService.getPublicEvents(param, from, size, request);
+        return eventService.getPublicEvents(parameters, from, size, request);
     }
 
     @GetMapping("/{id}")

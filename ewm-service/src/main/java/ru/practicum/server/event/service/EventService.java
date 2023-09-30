@@ -22,11 +22,12 @@ public interface EventService {
     EventRequestStatusUpdateResult updateEventRequestStatus(int userId, int eventId,
                                                             EventRequestStatusUpdateRequest request);
 
-    List<EventFullDto> getFilteredEvents(AdminEventsParameters param, int from, int size);
+    List<EventFullDto> getFilteredEvents(AdminEventsParameters parameters, int from, int size);
 
     EventFullDto updateByAdmin(int eventId, UpdateEventAdminRequest updateEventAdminRequest);
 
-    List<EventShortDto> getPublicEvents(PublicEventsParameters param, int from, int size, HttpServletRequest request);
+    List<EventShortDto> getPublicEvents(PublicEventsParameters parameters, int from, int size,
+                                        HttpServletRequest request);
 
     EventFullDto getEventInfo(int eventId, HttpServletRequest request);
 }

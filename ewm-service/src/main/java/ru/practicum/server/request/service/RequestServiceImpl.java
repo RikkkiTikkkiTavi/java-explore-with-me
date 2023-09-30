@@ -3,10 +3,10 @@ package ru.practicum.server.request.service;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import ru.practicum.server.request.dto.ParticipationRequestDto;
 import ru.practicum.server.event.model.Event;
 import ru.practicum.server.event.repository.EventRepository;
 import ru.practicum.server.exception.NotFoundException;
+import ru.practicum.server.request.dto.ParticipationRequestDto;
 import ru.practicum.server.request.mapper.RequestMapper;
 import ru.practicum.server.request.model.ParticipationRequest;
 import ru.practicum.server.request.model.Status;
@@ -60,9 +60,9 @@ public class RequestServiceImpl implements RequestService {
     @Override
     public ParticipationRequestDto cancelRequest(int userId, int requestId) {
         userRepository.findById(userId).orElseThrow(() -> new NotFoundException("User not found"));
-        ParticipationRequest pr = requestRepository.findById(requestId)
+        ParticipationRequest pageRequest = requestRepository.findById(requestId)
                 .orElseThrow(() -> new NotFoundException("Request not found"));
-        pr.setStatus(Status.CANCELED);
-        return RequestMapper.requestToRequestDto(pr);
+        pageRequest.setStatus(Status.CANCELED);
+        return RequestMapper.requestToRequestDto(pageRequest);
     }
 }

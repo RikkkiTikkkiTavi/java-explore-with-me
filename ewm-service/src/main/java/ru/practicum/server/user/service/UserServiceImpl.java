@@ -23,11 +23,11 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public List<UserDto> getUsers(List<Integer> ids, int from, int size) {
-        PageRequest pr = PageRequest.of(from, size, Sort.by(Sort.Direction.ASC, "id"));
+        PageRequest pageRequest = PageRequest.of(from, size, Sort.by(Sort.Direction.ASC, "id"));
         if (ids == null) {
-            return UserMapper.toUserDtoList(userRepository.findAll(pr));
+            return UserMapper.toUserDtoList(userRepository.findAll(pageRequest));
         }
-        return UserMapper.toUserDtoList(userRepository.findAllByIdIn(ids, pr));
+        return UserMapper.toUserDtoList(userRepository.findAllByIdIn(ids, pageRequest));
     }
 
     @Transactional
