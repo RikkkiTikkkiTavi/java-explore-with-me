@@ -3,6 +3,7 @@ package ru.practicum.server.event.validator;
 import ru.practicum.server.event.dto.NewEventDto;
 import ru.practicum.server.event.dto.UpdateEventUserRequest;
 import ru.practicum.server.event.model.Event;
+import ru.practicum.server.event.repository.PublicEventsParameters;
 import ru.practicum.server.exception.ValidateException;
 
 import java.time.LocalDateTime;
@@ -48,5 +49,18 @@ public class EventValidator {
             }
         }
         return "id";
+    }
+
+    public static void checkParameters(PublicEventsParameters param) {
+        param.setSort(EventValidator.checkSort(param.getSort()));
+        if (param.getRangeStart() == null) {
+            param.setRangeStart(LocalDateTime.now());
+        }
+        if (param.getRangeStart().isAfter(param.getRangeEnd())) {
+            throw new ValidateException("Start must be before end");
+        }
+        if (param.getText() != null) {
+            param.setText(param.getText().toUpperCase());
+        }
     }
 }
