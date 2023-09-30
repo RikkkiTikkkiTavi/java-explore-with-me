@@ -51,16 +51,16 @@ public class EventValidator {
         return "id";
     }
 
-    public static void checkParameters(PublicEventsParameters param) {
-        param.setSort(EventValidator.checkSort(param.getSort()));
-        if (param.getRangeStart() == null) {
-            param.setRangeStart(LocalDateTime.now());
+    public static void checkParameters(PublicEventsParameters parameters) {
+        parameters.setSort(EventValidator.checkSort(parameters.getSort()));
+        if (parameters.getRangeStart() == null) {
+            parameters.setRangeStart(LocalDateTime.now());
         }
-        if (param.getRangeStart().isAfter(param.getRangeEnd())) {
+        if (parameters.getRangeStart().isAfter(parameters.getRangeEnd())) {
             throw new ValidateException("Start must be before end");
         }
-        if (param.getText() != null) {
-            param.setText(param.getText().toUpperCase());
+        if (parameters.getText() != null) {
+            parameters.setText(parameters.getText().toUpperCase());
         }
     }
 }

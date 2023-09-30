@@ -22,7 +22,7 @@ public interface EventRepository extends JpaRepository<Event, Integer> {
             "(e.state in :#{#parameters.states} or :#{#parameters.states} is null) and " +
             "(e.category.id in :#{#parameters.categories} or :#{#parameters.categories} is null) and " +
             "e.eventDate between :#{#parameters.rangeStart} and :#{#parameters.rangeEnd}")
-    Page<Event> getFilteredEvents(AdminEventsParameters parameters, PageRequest pageRequest);
+    Page<Event> getFilteredEvents(@Param("parameters") AdminEventsParameters parameters, PageRequest pageRequest);
 
     @Query("SELECT e FROM Event e " +
             "WHERE " +
@@ -32,7 +32,7 @@ public interface EventRepository extends JpaRepository<Event, Integer> {
             "(e.category.id in :#{#parameters.categories} or :#{#parameters.categories} is null) and " +
             "(e.paid = :#{#parameters.paid} or :#{#parameters.paid} is null) and " +
             "e.eventDate between :#{#parameters.rangeStart} and :#{#parameters.rangeEnd}")
-    Page<Event> getPublicEvents(@Param("param") PublicEventsParameters parameters, PageRequest pageRequest);
+    Page<Event> getPublicEvents(@Param("parameters") PublicEventsParameters parameters, PageRequest pageRequest);
 
     @Query("SELECT e FROM Event e " +
             "WHERE " +
@@ -43,5 +43,5 @@ public interface EventRepository extends JpaRepository<Event, Integer> {
             "(e.category.id in :#{#parameters.categories} or :#{#parameters.categories} is null) and " +
             "(e.paid = :#{#parameters.paid} or :#{#parameters.paid} is null) and " +
             "e.eventDate between :#{#parameters.rangeStart} and :#{#parameters.rangeEnd}")
-    Page<Event> getAvailableEvents(@Param("param") PublicEventsParameters parameters, PageRequest pageRequest);
+    Page<Event> getAvailableEvents(@Param("parameters") PublicEventsParameters parameters, PageRequest pageRequest);
 }
