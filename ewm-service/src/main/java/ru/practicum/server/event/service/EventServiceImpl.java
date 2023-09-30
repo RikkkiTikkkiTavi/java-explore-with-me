@@ -15,11 +15,12 @@ import ru.practicum.server.event.dto.*;
 import ru.practicum.server.event.mapper.EventMapper;
 import ru.practicum.server.event.model.Event;
 import ru.practicum.server.event.model.EventState;
+import ru.practicum.server.event.repository.AdminEventsParameters;
 import ru.practicum.server.event.repository.EventRepository;
+import ru.practicum.server.event.repository.PublicEventsParameters;
 import ru.practicum.server.event.validator.EventValidator;
 import ru.practicum.server.exception.ConflictException;
 import ru.practicum.server.exception.NotFoundException;
-import ru.practicum.server.exception.ValidateException;
 import ru.practicum.server.location.repository.LocationRepository;
 import ru.practicum.server.request.dto.ParticipationRequestDto;
 import ru.practicum.server.request.mapper.RequestMapper;
@@ -178,10 +179,9 @@ public class EventServiceImpl implements EventService {
     }
 
     @Override
-    public List<EventFullDto> getFilteredEvents(List<Integer> users, List<EventState> states, List<Integer> categories,
-                                                LocalDateTime rangeStart, LocalDateTime rangeEnd, int from, int size) {
+    public List<EventFullDto> getFilteredEvents(AdminEventsParameters param, int from, int size) {
         PageRequest pr = PageRequest.of(from, size, Sort.by(Sort.Direction.ASC, "id"));
-        return eventRepository.getFilteredEvents(users, states, categories, rangeStart, rangeEnd, pr).stream()
+        return eventRepository.getFilteredEvents(param, pr).stream()
                 .map(e -> EventMapper.eventToEventFullDto(e, getStats(e))).collect(Collectors.toList());
     }
 
@@ -205,27 +205,16 @@ public class EventServiceImpl implements EventService {
     }
 
     @Override
-    public List<EventShortDto> getPublicEvents(String text, List<Integer> category, Boolean paid, Boolean onlyAvailable,
-                                               String sort, LocalDateTime rangeStart, LocalDateTime rangeEnd,
-                                               int from, int size, HttpServletRequest request) {
-        sort = EventValidator.checkSort(sort);
-        if (rangeStart == null) {
-            rangeStart = LocalDateTime.now();
-        }
-        if (rangeStart.isAfter(rangeEnd)) {
-            throw new ValidateException("Start must be before end");
-        }
-        PageRequest pr = PageRequest.of(from, size, Sort.by(Sort.Direction.ASC, sort));
-        if (text != null) {
-            text = text.toUpperCase();
-        }
-        if (onlyAvailable) {
-            Page<Event> availableEvents = eventRepository.getAvailableEvents(text, category, paid,
-                    rangeStart, rangeEnd, pr);
+    public List<EventShortDto> getPublicEvents(PublicEventsParameters param, int from, int size,
+                                               HttpServletRequest request) {
+        EventValidator.checkParameters(param);
+        PageRequest pr = PageRequest.of(from, size, Sort.by(Sort.Direction.ASC, param.getSort()));
+        if (param.getOnlyAvailable()) {
+            Page<Event> availableEvents = eventRepository.getAvailableEvents(param, pr);
+            createHit(request);
             return availableEvents.stream().map(EventMapper::eventToShortDto).collect(Collectors.toList());
         } else {
-            Page<Event> allEvents = eventRepository.getPublicEvents(text, category, paid, rangeStart,
-                    rangeEnd, pr);
+            Page<Event> allEvents = eventRepository.getPublicEvents(param, pr);
             createHit(request);
             return allEvents.stream().map(EventMapper::eventToShortDto).collect(Collectors.toList());
         }
