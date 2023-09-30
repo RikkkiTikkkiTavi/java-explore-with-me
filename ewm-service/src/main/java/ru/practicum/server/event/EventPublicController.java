@@ -7,6 +7,7 @@ import org.springframework.web.bind.annotation.*;
 import ru.practicum.client.StatsClient;
 import ru.practicum.server.event.dto.EventFullDto;
 import ru.practicum.server.event.dto.EventShortDto;
+import ru.practicum.server.event.repository.PublicEventsParameters;
 import ru.practicum.server.event.service.EventService;
 
 import javax.servlet.http.HttpServletRequest;
@@ -38,8 +39,16 @@ public class EventPublicController {
                                                @RequestParam(defaultValue = "0") int from,
                                                @RequestParam(defaultValue = "10") int size,
                                                HttpServletRequest request) {
-        return eventService.getPublicEvents(text, categories, paid, onlyAvailable, sort, rangeStart, rangeEnd, from,
-                size, request);
+        PublicEventsParameters param = PublicEventsParameters.builder()
+                .text(text)
+                .categories(categories)
+                .paid(paid)
+                .onlyAvailable(onlyAvailable)
+                .sort(sort)
+                .rangeStart(rangeStart)
+                .rangeEnd(rangeEnd)
+                .build();
+        return eventService.getPublicEvents(param, from, size, request);
     }
 
     @GetMapping("/{id}")
