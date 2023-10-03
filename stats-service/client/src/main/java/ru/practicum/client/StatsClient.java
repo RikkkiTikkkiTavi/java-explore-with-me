@@ -3,54 +3,60 @@ package ru.practicum.client;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.web.client.RestTemplateBuilder;
-import org.springframework.http.ResponseEntity;
+import org.springframework.http.*;
 import org.springframework.http.client.HttpComponentsClientHttpRequestFactory;
+import org.springframework.stereotype.Component;
+import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.DefaultUriBuilderFactory;
 import ru.practicum.dto.hit.HitDto;
+import ru.practicum.dto.stat.StatDto;
 
-import java.net.URLEncoder;
-import java.nio.charset.StandardCharsets;
 import java.time.LocalDateTime;
-import java.util.List;
-import java.util.Map;
+import java.time.format.DateTimeFormatter;
+import java.util.*;
+import java.util.stream.Collectors;
 
-public class StatsClient extends BaseClient {
+@Component
+public class StatsClient {
+
+    RestTemplate rest;
 
     @Autowired
-    public StatsClient(@Value("${stat-server.url}") String serverUrl, RestTemplateBuilder builder) {
-        super(
+    public StatsClient(@Value("${stats-server.url}") String serverUrl, RestTemplateBuilder builder) {
+        this.rest =
                 builder
                         .uriTemplateHandler(new DefaultUriBuilderFactory(serverUrl))
                         .requestFactory(HttpComponentsClientHttpRequestFactory::new)
                         .build()
-        );
+        ;
     }
 
-    public ResponseEntity<Object> addHit(HitDto hitDto) {
-        return post("/hit", hitDto);
+    public void addHit(HitDto hitDto) {
+        rest.exchange("/hit", HttpMethod.POST, new HttpEntity<>(hitDto, defaultHeaders()), Object.class);
     }
 
-    public ResponseEntity<Object> getStats(LocalDateTime start, LocalDateTime end, List<String> uris, boolean unique) {
-
-        if (uris == null || uris.isEmpty()) {
-            Map<String, Object> param = Map.of(
-                    "start", encodeTime(start),
-                    "end", encodeTime(end),
-                    "unique", unique
-            );
-            return get("/stats?start={start}&end={end}&unique={unique}", param);
-        }
+    public List<StatDto> getStats(LocalDateTime start, LocalDateTime end, String[] uris, boolean unique) {
 
         Map<String, Object> param = Map.of(
-                "start", encodeTime(start),
-                "end", encodeTime(end),
+                "start", start.format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")),
+                "end", end.format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")),
                 "unique", unique,
                 "uris", uris
         );
-        return get("/stats?start={start}&end={end}&uris={uris}&unique={unique}", param);
+
+        StatDto[] stats = rest.getForObject("/stats?start={start}&end={end}&unique={unique}&uris={uris}",
+                StatDto[].class, param);
+        List<StatDto> statsList = new ArrayList<>();
+        if (stats != null) {
+            statsList = Arrays.stream(stats).collect(Collectors.toList());
+        }
+        return statsList;
     }
 
-    private String encodeTime(LocalDateTime time) {
-        return URLEncoder.encode(time.toString(), StandardCharsets.UTF_8);
+    private HttpHeaders defaultHeaders() {
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_JSON);
+        headers.setAccept(List.of(MediaType.APPLICATION_JSON));
+        return headers;
     }
 }
