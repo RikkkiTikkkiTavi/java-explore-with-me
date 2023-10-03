@@ -1,2 +1,2 @@
 # java-explore-with-me
-ExploreWithMe project.
+https://github.com/RikkkiTikkkiTavi/java-explore-with-me/pull/7
