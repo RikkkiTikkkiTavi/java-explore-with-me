@@ -1,7 +1,9 @@
 # _Explore-With-Me_
 ___
 
-## This app will help you find the event you are interested in. In addition, you have the opportunity to create your own event and invite your friends there.
+#### This app will help you find the event you are interested in. 
+#### In addition, you have the opportunity to create your own event and invite your friends there.
+
 ___
 ## This app uses microservice architecture:
 
